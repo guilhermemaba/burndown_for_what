@@ -61,7 +61,7 @@ That's it, run the project server::
     Starting development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
-You can access *127.0.0.1:8000/burndown/sprint/1/*::
+You can access http://127.0.0.1:8000/burndown/sprint/1/
 
 .. image:: https://cloud.githubusercontent.com/assets/6231505/10746691/aba0e00e-7c34-11e5-9c1f-88263b9f3dd8.png
 
