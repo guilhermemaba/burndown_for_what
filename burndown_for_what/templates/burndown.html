@@ -12,10 +12,15 @@
       data.addColumn('string', 'Day');
       data.addColumn('number', 'Score');
       data.addColumn('number', 'Burndown line');
+      data.addColumn('number', 'Score Unplanned');
 
       data.addRows([
-        {% for daily_date, score, burn_score in burndown_data %}
-          ['{{ daily_date }}', {% if score %}{{ score }}{% else%} null {% endif %}, {{ burn_score }}],
+        {% for daily_date, score, burn_score, unplanned in burndown_data %}
+          ['{{ daily_date }}',
+            {% if score %}{{ score }}{% else%} null {% endif %},
+            {{ burn_score }},
+            {% if unplanned != None %}{{ unplanned }}{% else%} null {% endif %}
+          ],
         {% endfor %}
       ]);
 
