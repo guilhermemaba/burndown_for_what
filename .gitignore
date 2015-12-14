@@ -46,3 +46,7 @@ docs/_build
 # Vim stuff
 *~
 *.sw[a-z]
+
+# Mac shit
+.DS_Store
+
