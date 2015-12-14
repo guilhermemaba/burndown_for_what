@@ -1,70 +1,10 @@
-{% load render_markdown %}
-<html>
-<head>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <script type="text/javascript">
-    google.load('visualization', '1.1', {packages: ['corechart', 'line']});
-    google.setOnLoadCallback(drawChart);
+{% extends "base.html" %}
 
-    function drawChart() {
-
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Day');
-      data.addColumn('number', 'Score');
-      data.addColumn('number', 'Burndown line');
-      data.addColumn('number', 'Score Unplanned');
-
-      data.addRows([
-        {% for daily_date, score, burn_score, unplanned in burndown_data %}
-          ['{{ daily_date }}',
-            {% if score %}{{ score }}{% else%} null {% endif %},
-            {{ burn_score }},
-            {% if unplanned != None %}{{ unplanned }}{% else%} null {% endif %}
-          ],
-        {% endfor %}
-      ]);
-
-      var options = {
-        title: 'Team: {{ team }}',
-        subtitle: 'Name: {{ name }}',
-        chart: {
-          title: 'Team: {{ team }}',
-          subtitle: 'Name: {{ name }}'
-				},
-				width: 1300,
-				height: 700,
-				vAxis: {
-					title: 'Score',
-					ticks: {{ yticks }},
-					textStyle: {
-						fontSize: 12
-					}
-        },
-				hAxis: { 
-					textStyle: {
-						fontSize: 11
-					}
-        },
-				series: {
-					1: {lineDashStyle: [2,2]}
-				}
-
-      };
-
-      var chart = new google.visualization.LineChart(document.getElementById('line_bottom_x'));
-
-      chart.draw(data, options);
-    }
-  </script>
-  <link rel="shortcut icon" type="image/png" href="https://cloud.githubusercontent.com/assets/6231505/10681166/4b4d4cce-7905-11e5-9d21-0469ebd11c13.png"/>
-
-</head>
-<body>
-  <div id="title" style="width:250px; margin:0 auto;">
-      Burndown for what 
-      <img alt="Burndown for what" src="https://cloud.githubusercontent.com/assets/6231505/10681166/4b4d4cce-7905-11e5-9d21-0469ebd11c13.png"> 
+{% block "content" %}
+<div class="col-md-12" style="margin-top: 40px;">
+  <div class="jumbotron">
+    <h1>Hello there!</h1>
+    <p>This is burndown for what! Now, you can be more productive and use scrum the right way.</p>
   </div>
-  <div id="line_bottom_x"></div>
-  {{ resume|markdownify|safe }}
-</body>
-</html>
+</div>
+{% endblock "content" %}

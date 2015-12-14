@@ -1,0 +1,51 @@
+/*
+ * Customizing Bootstrap Template
+ */
+* {
+  font-family: "Open Sans";
+}
+.c-navbar-base {
+  margin-bottom: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+
+  background-color: orange;
+  border-bottom: 1px solid #CA8404;
+}
+.navbar-default .navbar-nav > li > a {
+  color: black;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a.active {
+  background-color: #EA9B0A;
+  color: #000;
+}
+
+/*
+ * Burndown for what
+ */
+.sprint-open {
+  color: green;
+}
+.sprint-closed {
+  color: red;
+}
+.sprint-thumbnail {
+  cursor: pointer;
+}
+.sprint-thumbnail:hover {
+  background-color: rgba(231, 231, 231, .22);
+}
+.sprint-thumbnail h4 {
+  text-align: center;
+}
+.sprint-thumbnail li {
+  padding: 5px;
+}
+.sprint-thumbnail .sprint-closed,
+.sprint-thumbnail .sprint-open {
+  border-top: 1px solid #e7e7e7;
+  margin-top: 15px;
+  text-align: center;
+}

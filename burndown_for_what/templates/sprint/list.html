@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="page-header">
+      <h2>
+        Sprints
+        <button class="btn btn-default pull-right"><i class="fa fa-plus"></i> New sprint</button>
+      </h2>
+    </div>
+  </div>
+  <div class="col-md-12">
+
+    {% for sprint in object_list %}
+      <div class="col-md-3">
+        <div class="thumbnail">
+          <div class="caption sprint-thumbnail" data-url="{% url 'burndown_sprint' sprint.pk %}">
+            <h4>{{ sprint.name }}</h4>
+            <ul class="list-unstyled">
+              <li><i class="fa fa-users"></i> {{ sprint.scrum_master.username }}</li>
+              <li><i class="fa fa-users"></i> {{ sprint.team }}</li>
+              <li><i class="fa fa-calendar"></i> {{ sprint.date_begin }}</li>
+
+              {% if sprint.closed %}
+                <li class="sprint-closed">Closed</li>
+              {% else %}
+                <li class="sprint-open">Open</li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock "content" %}
+
+{% block "extra_script" %}
+  <script>
+    $(document).ready(function(){
+        $(".sprint-thumbnail").on("click", function(e){
+            e.preventDefault();
+            window.location.href = $(this).attr("data-url");
+        });
+    });
+  </script>
+{% endblock "extra_script" %}
