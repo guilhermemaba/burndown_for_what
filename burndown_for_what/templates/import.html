@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <title></title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+  </head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="panel panel-default">
+        <div class="panel-heading">Github Sprint Import - <b>{{ sprint_title }}</b></div>
+          <div class="panel-body">
+
+            <form method="POST" action='{% url "daily_save" %}'>
+              {% csrf_token %}
+                {% for k, v in scores.items %}
+                <div class="input-group">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="days" aria-label="{{k}}" value="{{k}}"/>
+                      <b>{{k}}</b> scores on <b>Planned:</b> {{ v.planned }} - <b>Unplanned:</b> {{ v.unplanned }}
+                    </label>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="input-group">
+                  <input type='submit' class='btn btn-default' value="Save">
+                </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
