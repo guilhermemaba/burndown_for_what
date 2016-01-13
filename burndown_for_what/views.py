@@ -1,18 +1,28 @@
 # -*- coding: utf8 -*-
 # vim: ts=4 sts=4 sw=4 et:
-from django.conf import settings
 
 from collections import defaultdict
 from itertools import groupby
-
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.views.generic import TemplateView, View
-from django.core.urlresolvers import reverse
-
 from pygithub3 import Github
+from rest_framework import status, serializers, generics
+from rest_framework.response import Response
+
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.views.generic import TemplateView, View
+from django.shortcuts import render
 
 from burndown_for_what.models import Sprint, Daily
+from burndown_for_what.models import Sprint
+
+
+def _connect_github():
+    data = settings.GITHUB_DATA
+    return Github(
+        login=data.get('login'), password=data.get('password'),
+        user=data.get('user'), repo=data.get('repo')
+    )
 
 
 class BurndownTemplateView(TemplateView):
@@ -31,13 +41,6 @@ class BurndownTemplateView(TemplateView):
 
 class ImportTemplateView(TemplateView):
     template_name = 'import.html'
-
-    def _connect_github(self):
-        data = settings.GITHUB_DATA
-        return Github(
-            login=data.get('login'), password=data.get('password'),
-            user=data.get('user'), repo=data.get('repo')
-        )
 
     def _get_last_sprint(self, gh):
         """ Get the sprint with latest end """
@@ -77,7 +80,7 @@ class ImportTemplateView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ImportTemplateView, self).get_context_data(**kwargs)
-        gh_conn = self._connect_github()
+        gh_conn = _connect_github()
 
         sprint = self._get_last_sprint(gh_conn)
         issues = self._get_closed_issues(gh_conn, sprint)
@@ -107,3 +110,74 @@ class ImportView(View):
             raise Exception('No data selected')
 
         return HttpResponseRedirect(reverse('burndown_sprint', args=(sprint.id,)))
+
+
+class SprintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sprint
+        fields = ('id', 'name', 'team', 'date_begin', 'score', 'closed', 'sprint_scored')
+
+
+class MilestoneSerializer(serializers.BaseSerializer):
+    def to_representation(self, obj):
+        return {
+            'id': obj.id,
+            'title': obj.title,
+            'description': obj.description,
+            'url': obj.url,
+            'number': obj.number,
+            'state': obj.state,
+            'due_on': obj.due_on,
+            'closed_at': obj.closed_at,
+        }
+
+
+class IssueSerializer(serializers.BaseSerializer):
+    def to_representation(self, obj):
+        assignee = obj.assignee
+        return {
+            'id': obj.id,
+            'title': obj.title,
+            'url': obj.url,
+            'number': obj.number,
+            'state': obj.state,
+            'closed_at': obj.closed_at,
+            'created_at': obj.created_at,
+            'labels': [label.name for label in obj.labels],
+            'assignee': {
+                'id': assignee.id,
+                'login': assignee.login,
+                'url': assignee.url,
+                'avatar_url': assignee.avatar_url,
+            },
+        }
+
+
+class SprintView(generics.ListAPIView):
+
+    model = Sprint
+    serializer_class = SprintSerializer
+
+    def get_queryset(self):
+        # TODO create filters
+        return Sprint.objects.all()
+
+
+class MilestoneView(generics.ListAPIView):
+
+    serializer_class = MilestoneSerializer
+
+    def get_queryset(self):
+        # FIXME 2x
+        connection = _connect_github()
+        return connection.issues.milestones.list(sort='due_date').all()
+
+
+class IssueView(generics.ListAPIView):
+
+    serializer_class = IssueSerializer
+
+    def get_queryset(self):
+        # FIXME 2x
+        connection = _connect_github()
+        return connection.issues.list_by_repo(**self.kwargs).all()
