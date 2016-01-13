@@ -180,4 +180,6 @@ class IssueView(generics.ListAPIView):
     def get_queryset(self):
         # FIXME 2x
         connection = _connect_github()
-        return connection.issues.list_by_repo(**self.kwargs).all()
+        issues_open = connection.issues.list_by_repo(state='open', **self.kwargs).all()
+        issues_closed = connection.issues.list_by_repo(state='closed', **self.kwargs).all()
+        return issues_open + issues_closed
