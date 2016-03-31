@@ -3,6 +3,8 @@
 
 from django.db import models
 
+SPRINT_SCORE = ['0.5', '1', '2', '3', '5', '8']
+
 
 class Organization(models.Model):
     name = models.CharField(max_length=150)
@@ -26,9 +28,48 @@ class Sprint(models.Model):
     resume = models.TextField(null=True, blank=True, help_text=u'Markdown is possible.')
     date_begin = models.DateField()
     score = models.FloatField()
-    notify_daily = models.BooleanField(default=True)
-    notify_closed = models.BooleanField(default=True)
+    github_user = models.CharField(max_length=150, blank=True, null=True)
+    github_repo = models.CharField(max_length=150, blank=True, null=True)
+    github_milestone_id = models.IntegerField(default=0)
     closed = models.BooleanField()
+
+    def save(self, *args, **kwargs):
+        from burndown_for_what.views import _connect_github  # FIXME
+        connection = _connect_github(self.github_user, self.github_repo)
+        Issue.objects.filter(sprint=self).delete()
+        for issue in connection.issues.list_by_repo(state='all', **{'milestone': self.github_milestone_id}).all():
+            self._create_issue(issue)
+        self.score = self._calculate_score()
+        super(Sprint, self).save(*args, **kwargs)
+        self._update_daily()
+
+    def _update_daily(self):
+        issues_closed = self.issue_set.filter(state='closed')
+        for daily in self.daily_set.all():
+            issues_daily = issues_closed.filter(closed_at=daily.date)
+            if issues_daily:
+                daily.score = sum(issues_daily.filter(unplanned=False).values_list('score', flat=True))
+                daily.score_unplanned = sum(issues_daily.filter(unplanned=True).values_list('score', flat=True))
+                daily.save()
+
+    def _calculate_score(self):
+        return sum(self.issue_set.filter(unplanned=False).values_list('score', flat=True))
+
+    def _create_issue(self, issue):
+        unplanned = True if [label for label in issue.labels if label.name == 'unplanned'] else False
+        score = sum([float(label.name) for label in issue.labels if label.name in SPRINT_SCORE])
+        Issue.objects.create(
+            sprint=self,
+            title=issue.title,
+            github_id=issue.id,
+            url=issue.url,
+            number=issue.number,
+            state=issue.state,
+            assignee_login=issue.assignee.login,
+            closed_at=issue.closed_at,
+            score=score,
+            unplanned=unplanned
+        )
 
     def __str__(self):
         return u'{}'.format(self.name)
@@ -45,17 +86,11 @@ class Sprint(models.Model):
 
     @property
     def score_unplanned(self):
-        dailys = self.daily_set.all()
-        if dailys:
-            return sum([daily.score_unplanned for daily in dailys if daily.score_unplanned])
-        return 0
+        return sum(self.issue_set.filter(unplanned=True, state='closed').values_list('score', flat=True))
 
     @property
     def sprint_scored(self):
-        dailys = self.daily_set.all()
-        if dailys:
-            return sum([daily.score for daily in dailys if daily.score])
-        return 0
+        return sum(self.issue_set.filter(unplanned=False, state='closed').values_list('score', flat=True))
 
     def get_data_burndown(self):
         # FIXME refactor this method
@@ -79,6 +114,19 @@ class Sprint(models.Model):
                 )
 
         return result
+
+
+class Issue(models.Model):
+    sprint = models.ForeignKey('burndown_for_what.Sprint')
+    title = models.TextField()
+    github_id = models.IntegerField(default=0)
+    url = models.TextField()
+    number = models.IntegerField(default=0)
+    state = models.CharField(max_length=150, blank=True, null=True)
+    assignee_login = models.CharField(max_length=150, blank=True, null=True)
+    closed_at = models.DateField(null=True, blank=True)
+    score = models.FloatField(null=True, blank=True)
+    unplanned = models.NullBooleanField()
 
 
 class Daily(models.Model):

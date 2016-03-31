@@ -17,11 +17,13 @@ from burndown_for_what.models import Sprint, Daily
 from burndown_for_what.models import Sprint
 
 
-def _connect_github():
+def _connect_github(user=None, repo=None):
     data = settings.GITHUB_DATA
     return Github(
-        login=data.get('login'), password=data.get('password'),
-        user=data.get('user'), repo=data.get('repo')
+        login=data.get('login'),
+        password=data.get('password'),
+        user=user or data.get('user'),
+        repo=repo or data.get('repo')
     )
 
 
