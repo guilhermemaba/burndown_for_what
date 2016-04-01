@@ -31,7 +31,10 @@ class DailyInline(admin.TabularInline):
 
 
 class SprintAdmin(admin.ModelAdmin):
-    list_display = ('name', 'team', 'scrum_master', 'score', 'sprint_scored', 'score_unplanned', 'closed')
+    list_display = (
+        'name', 'team', 'scrum_master', 'score', 'sprint_scored', 'github_user', 'github_repo', 'score_unplanned',
+        'closed'
+    )
     list_filter = ('team__name', 'closed', 'scrum_master__username')
     search_fields = ('team__name', 'closed', 'scrum_master__usernname')
     inlines = (DailyInline,)

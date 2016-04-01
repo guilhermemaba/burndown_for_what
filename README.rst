@@ -25,7 +25,6 @@ Install burndown_for_what::
 In you django project, configure **settings.py**::
 
     INSTALLED_APPS = (
-        'grappelli',
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
@@ -34,6 +33,12 @@ In you django project, configure **settings.py**::
         'django.contrib.staticfiles',
         'burndown_for_what',
     )
+	GITHUB_DATA = {                                                
+		'login': 'your@login.com',                        
+		'password': 'your_token',    
+		'user': 'org_or_user',                                           
+		'repo': 'repository',                                         
+	}                                                              
 
 And then yours **urls.py**::
 
@@ -42,7 +47,6 @@ And then yours **urls.py**::
 
     urlpatterns = [
         url(r'^admin/', include(admin.site.urls)),
-        url(r'^grappelli/', include('grappelli.urls')),
         url(r'^burndown/', include('burndown_for_what.urls')),
     ]
 
