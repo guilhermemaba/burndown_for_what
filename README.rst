@@ -22,7 +22,7 @@ Install burndown_for_what::
 
     pip install burndown_for_what
 
-In you django project, configure **settings.py**::
+In your django project, configure **settings.py**::
 
     INSTALLED_APPS = (
         'django.contrib.admin',
@@ -33,12 +33,12 @@ In you django project, configure **settings.py**::
         'django.contrib.staticfiles',
         'burndown_for_what',
     )
-	GITHUB_DATA = {                                                
-		'login': 'your@login.com',                        
-		'password': 'your_token',    
-		'user': 'org_or_user',                                           
-		'repo': 'repository',                                         
-	}                                                              
+    GITHUB_DATA = {
+        'login': 'your@login.com',
+        'password': 'your_token',
+        'user': 'org_or_user',
+        'repo': 'repository',
+    }
 
 And then yours **urls.py**::
 
