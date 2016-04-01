@@ -3,7 +3,7 @@
 
 from django.conf.urls import include, url
 from django.contrib import admin
-from burndown_for_what.views import BurndownTemplateView, ImportTemplateView, ImportView, SprintView, MilestoneView, IssueView
+from burndown_for_what.views import BurndownTemplateView, SprintView, MilestoneView, IssueView
 
 
 urlpatterns = [
@@ -11,16 +11,6 @@ urlpatterns = [
         r'^sprint/(?P<sprint_id>\d+)/$',
         BurndownTemplateView.as_view(),
         name='burndown_sprint'
-    ),
-    url(
-        r'^import/$',
-        ImportTemplateView.as_view(),
-        name='import'
-    ),
-    url(
-        r'^daily/$',
-        ImportView.as_view(),
-        name='daily_save'
     ),
     url(
         r'^api/sprint/$',

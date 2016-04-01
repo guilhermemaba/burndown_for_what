@@ -3,7 +3,7 @@
 
 from django.db import models
 
-SPRINT_SCORE = ['0.5', '1', '2', '3', '5', '8']
+from burndown_for_what.utils import SPRINT_POINT, connect_github
 
 
 class Organization(models.Model):
@@ -34,8 +34,13 @@ class Sprint(models.Model):
     closed = models.BooleanField()
 
     def save(self, *args, **kwargs):
-        from burndown_for_what.views import _connect_github  # FIXME
-        connection = _connect_github(self.github_user, self.github_repo)
+        """
+        Save object and search/create issues refers the milestone, after this, update *dailys*
+
+        :return:
+        """
+        connection = connect_github(self.github_user, self.github_repo)
+        # For default, delete all issues, and after
         Issue.objects.filter(sprint=self).delete()
         for issue in connection.issues.list_by_repo(state='all', **{'milestone': self.github_milestone_id}).all():
             self._create_issue(issue)
@@ -56,8 +61,14 @@ class Sprint(models.Model):
         return sum(self.issue_set.filter(unplanned=False).values_list('score', flat=True))
 
     def _create_issue(self, issue):
-        unplanned = True if [label for label in issue.labels if label.name == 'unplanned'] else False
-        score = sum([float(label.name) for label in issue.labels if label.name in SPRINT_SCORE])
+        """
+        Create model Issues with data from GitHub.
+
+        :param Issue issue:
+        :return:
+        """
+        unplanned = any([label for label in issue.labels if label.name == 'unplanned'])
+        score = sum([float(label.name) for label in issue.labels if label.name in SPRINT_POINT])
         Issue.objects.create(
             sprint=self,
             title=issue.title,
