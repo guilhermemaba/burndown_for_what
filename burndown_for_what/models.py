@@ -73,7 +73,7 @@ class Sprint(models.Model):
             sprint=self,
             title=issue.title,
             github_id=issue.id,
-            url=issue.url,
+            url=issue.html_url,
             number=issue.number,
             state=issue.state,
             assignee_login=issue.assignee.login,
