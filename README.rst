@@ -32,6 +32,7 @@ In your django project, configure **settings.py**::
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'burndown_for_what',
+        'rest_framework',
     )
     GITHUB_DATA = {
         'login': 'your@login.com',
@@ -80,3 +81,4 @@ Cookiecutter Tools Used in Making This Package
 
 *  cookiecutter
 *  cookiecutter-djangopackage
+*  django-rest-framework
