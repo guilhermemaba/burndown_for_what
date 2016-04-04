@@ -1,14 +1,21 @@
 # -*- coding: utf8 -*-
 # vim: ts=4 sts=4 sw=4 et:
 
-from rest_framework import serializers, generics
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django.views.generic import TemplateView
 
-from burndown_for_what.models import Sprint, Issue
+from burndown_for_what.models import Sprint
 from burndown_for_what.utils import connect_github
+from burndown_for_what.serializers import (
+    MilestoneGithubSerializer,
+    IssueModelSerializer,
+    IssueGithubSerializer,
+    SprintCustomSerializer,
+    SprintSerializer,
+)
 
 
 class BurndownTemplateView(TemplateView):
@@ -27,73 +34,6 @@ class BurndownTemplateView(TemplateView):
         return context
 
 
-class SprintSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Sprint
-        fields = ('id', 'name', 'team', 'date_begin', 'score', 'closed', 'sprint_scored')
-
-
-class MilestoneSerializer(serializers.BaseSerializer):
-    def to_representation(self, obj):
-        return {
-            'id': obj.id,
-            'title': obj.title,
-            'description': obj.description,
-            'url': obj.url,
-            'number': obj.number,
-            'state': obj.state,
-            'due_on': obj.due_on,
-            'closed_at': obj.closed_at,
-        }
-
-
-class IssueSerializer(serializers.BaseSerializer):
-    def to_representation(self, obj):
-        assignee = obj.assignee
-        return {
-            'id': obj.id,
-            'title': obj.title,
-            'url': obj.url,
-            'number': obj.number,
-            'state': obj.state,
-            'closed_at': obj.closed_at,
-            'created_at': obj.created_at,
-            'labels': [label.name for label in obj.labels],
-            'assignee': {
-                'id': assignee.id,
-                'login': assignee.login,
-                'url': assignee.url,
-                'avatar_url': assignee.avatar_url,
-            },
-        }
-
-
-class IssueModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Issue
-        fields = '__all__'
-
-
-class SprintModelSerializer(serializers.ModelSerializer):
-    issues = serializers.SerializerMethodField()
-    burndown_data = serializers.SerializerMethodField()
-    team = serializers.ReadOnlyField(source='team.name')
-    scrum_master = serializers.ReadOnlyField(source='scrum_master.username')
-
-    class Meta:
-        model = Sprint
-        fields = ('name', 'scrum_master', 'team', 'date_begin', 'score', 'github_user', 'github_repo',
-                  'github_milestone_id', 'closed', 'issues', 'burndown_data',
-        )
-
-    def get_burndown_data(self, sprint):
-        return sprint.get_data_burndown()
-
-    def get_issues(self, sprint):
-        serializer = IssueModelSerializer(instance=sprint.issue_set.all(),  many=True)
-        return serializer.data
-
-
 class SprintView(generics.ListAPIView):
     model = Sprint
     serializer_class = SprintSerializer
@@ -105,7 +45,7 @@ class SprintView(generics.ListAPIView):
 
 class SprintDetailView(APIView):
     model = Sprint
-    serializer_class = SprintModelSerializer
+    serializer_class = SprintCustomSerializer
 
     def get(self, request, sprint_id):
         serializer = self.serializer_class(Sprint.objects.get(id=sprint_id))
@@ -113,7 +53,10 @@ class SprintDetailView(APIView):
 
 
 class MilestoneView(generics.ListAPIView):
-    serializer_class = MilestoneSerializer
+    """
+    Search milestone on GitHub.
+    """
+    serializer_class = MilestoneGithubSerializer
 
     def get_queryset(self):
         # FIXME 2x
@@ -122,7 +65,10 @@ class MilestoneView(generics.ListAPIView):
 
 
 class IssueView(generics.ListAPIView):
-    serializer_class = IssueSerializer
+    """
+    Search issue on GitHub.
+    """
+    serializer_class = IssueGithubSerializer
 
     def get_queryset(self):
         # FIXME 2x
