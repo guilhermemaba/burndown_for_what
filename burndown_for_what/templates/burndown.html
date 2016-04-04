@@ -1,7 +1,8 @@
+{% extends 'burndown_for_what/base.html' %}
 {% load render_markdown %}
-<html>
-<head>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+
+{% block extra_js %}
   <script type="text/javascript">
     google.load('visualization', '1.1', {packages: ['corechart', 'line']});
     google.setOnLoadCallback(drawChart);
@@ -40,7 +41,7 @@
 						fontSize: 12
 					}
         },
-				hAxis: { 
+				hAxis: {
 					textStyle: {
 						fontSize: 11
 					}
@@ -56,13 +57,13 @@
       chart.draw(data, options);
     }
   </script>
-  <link rel="shortcut icon" type="image/png" href="https://cloud.githubusercontent.com/assets/6231505/10681166/4b4d4cce-7905-11e5-9d21-0469ebd11c13.png"/>
+{% endblock %}
 
-</head>
-<body>
+{% block content %}
+
   <div id="title" style="width:250px; margin:0 auto;">
-      Burndown for what 
-      <img alt="Burndown for what" src="https://cloud.githubusercontent.com/assets/6231505/10681166/4b4d4cce-7905-11e5-9d21-0469ebd11c13.png"> 
+      Burndown for what
+      <img alt="Burndown for what" src="https://cloud.githubusercontent.com/assets/6231505/10681166/4b4d4cce-7905-11e5-9d21-0469ebd11c13.png">
   </div>
   <div id="line_bottom_x"></div>
   {{ resume|markdownify|safe }}
@@ -110,5 +111,4 @@
       </tr>
     {% endfor %}
   </table>
-</body>
-</html>
+{% endblock %}

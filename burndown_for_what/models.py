@@ -42,10 +42,10 @@ class Sprint(models.Model):
         connection = connect_github(self.github_user, self.github_repo)
         # For default, delete all issues, and after
         Issue.objects.filter(sprint=self).delete()
+        super(Sprint, self).save(*args, **kwargs)
         for issue in connection.issues.list_by_repo(state='all', **{'milestone': self.github_milestone_id}).all():
             self._create_issue(issue)
         self.score = self._calculate_score()
-        super(Sprint, self).save(*args, **kwargs)
         self._update_daily()
 
     def _update_daily(self):
