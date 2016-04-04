@@ -66,5 +66,49 @@
   </div>
   <div id="line_bottom_x"></div>
   {{ resume|markdownify|safe }}
+
+  <h3>Issues</h3>
+  <table style='text-align: left'>
+    <tr>
+      <th>Issue</th>
+      <th>Title</th>
+      <th>Score</th>
+      <th>Assignee</th>
+      <th>State</th>
+      <th>Close At</th>
+    </tr>
+    {% for issue in issues %}
+      <tr>
+        <th>{{ issue.number }}</th>
+        <th>{{ issue.title }}</th>
+        <th>{{ issue.score }}</th>
+        <th>{{ issue.assignee_login }}</th>
+        <th>{{ issue.state }}</th>
+        <th>{{ issue.closed_at }}</th>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <h3>Issues Unplanned</h3>
+  <table style='text-align: left'>
+    <tr>
+      <th>Issue</th>
+      <th>Title</th>
+      <th>Score</th>
+      <th>Assignee</th>
+      <th>State</th>
+      <th>Close At</th>
+    </tr>
+    {% for issue in issues_unplanned %}
+      <tr>
+        <th>{{ issue.number }}</th>
+        <th>{{ issue.title }}</th>
+        <th>{{ issue.score }}</th>
+        <th>{{ issue.assignee_login }}</th>
+        <th>{{ issue.state }}</th>
+        <th>{{ issue.closed_at }}</th>
+      </tr>
+    {% endfor %}
+  </table>
 </body>
 </html>

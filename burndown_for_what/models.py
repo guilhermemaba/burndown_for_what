@@ -108,7 +108,7 @@ class Sprint(models.Model):
         score_per_day = self.score/self.duration
         score_daily = 0
         score_unplanned = 0
-        result = [(str(self.date_begin), self.score, self.score, 0),]
+        result = [(str(self.date_begin), self.score, self.score, 0), ]
 
         for x, daily in enumerate(self.daily_set.all(), start=1):
             burndown_daily_score = self.score - (x * score_per_day)

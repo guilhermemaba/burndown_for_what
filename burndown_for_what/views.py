@@ -2,11 +2,13 @@
 # vim: ts=4 sts=4 sw=4 et:
 
 from rest_framework import serializers, generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from django.views.generic import TemplateView
 
-from burndown_for_what.models import Sprint
-from burndown_for_what.models import connect_github
+from burndown_for_what.models import Sprint, Issue
+from burndown_for_what.utils import connect_github
 
 
 class BurndownTemplateView(TemplateView):
@@ -16,6 +18,8 @@ class BurndownTemplateView(TemplateView):
         sprint = Sprint.objects.get(pk=kwargs.get('sprint_id'))
         context = super(BurndownTemplateView, self).get_context_data(**kwargs)
         context['team'] = sprint.team.name
+        context['issues'] = sprint.issue_set.filter(unplanned=False).order_by('-state', 'assignee_login')
+        context['issues_unplanned'] = sprint.issue_set.filter(unplanned=True).order_by('-state', 'assignee_login')
         context['name'] = sprint.name
         context['resume'] = sprint.resume
         context['yticks'] = sprint.get_ticks()
@@ -64,6 +68,32 @@ class IssueSerializer(serializers.BaseSerializer):
         }
 
 
+class IssueModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Issue
+        fields = '__all__'
+
+
+class SprintModelSerializer(serializers.ModelSerializer):
+    issues = serializers.SerializerMethodField()
+    burndown_data = serializers.SerializerMethodField()
+    team = serializers.ReadOnlyField(source='team.name')
+    scrum_master = serializers.ReadOnlyField(source='scrum_master.username')
+
+    class Meta:
+        model = Sprint
+        fields = ('name', 'scrum_master', 'team', 'date_begin', 'score', 'github_user', 'github_repo',
+                  'github_milestone_id', 'closed', 'issues', 'burndown_data',
+        )
+
+    def get_burndown_data(self, sprint):
+        return sprint.get_data_burndown()
+
+    def get_issues(self, sprint):
+        serializer = IssueModelSerializer(instance=sprint.issue_set.all(),  many=True)
+        return serializer.data
+
+
 class SprintView(generics.ListAPIView):
     model = Sprint
     serializer_class = SprintSerializer
@@ -71,6 +101,15 @@ class SprintView(generics.ListAPIView):
     def get_queryset(self):
         # TODO create filters
         return Sprint.objects.all()
+
+
+class SprintDetailView(APIView):
+    model = Sprint
+    serializer_class = SprintModelSerializer
+
+    def get(self, request, sprint_id):
+        serializer = self.serializer_class(Sprint.objects.get(id=sprint_id))
+        return Response(serializer.data)
 
 
 class MilestoneView(generics.ListAPIView):
