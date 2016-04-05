@@ -10,4 +10,5 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Amim Knabben <amim.knabben@gmail.com>
+* João André Prudêncio da Silva <joaoandre.ja@gmail.com>
