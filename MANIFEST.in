@@ -3,4 +3,4 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
-recursive-include burndown_for_what *.html *.png *.json *.gif *js *.css *jpg *jpeg *svg *py
+recursive-include burndown_for_what *.html *.png *.json *.gif *js *.css *jpg *jpeg *svg *py *.woff *.ttf

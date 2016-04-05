@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 # vim: ts=4 sts=4 sw=4 et:
 
+
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -24,12 +25,9 @@ class BurndownTemplateView(TemplateView):
     def get_context_data(self, **kwargs):
         sprint = Sprint.objects.get(pk=kwargs.get('sprint_id'))
         context = super(BurndownTemplateView, self).get_context_data(**kwargs)
-        context['team'] = sprint.team.name
         context['issues'] = sprint.issue_set.filter(unplanned=False).order_by('-state', 'assignee_login')
         context['issues_unplanned'] = sprint.issue_set.filter(unplanned=True).order_by('-state', 'assignee_login')
-        context['name'] = sprint.name
-        context['resume'] = sprint.resume
-        context['yticks'] = sprint.get_ticks()
+        context['sprint'] = sprint
         context['burndown_data'] = sprint.get_data_burndown()
         return context
 

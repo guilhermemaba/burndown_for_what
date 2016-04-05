@@ -85,12 +85,6 @@ class Sprint(models.Model):
     def __str__(self):
         return u'{}'.format(self.name)
 
-    def _get_max_score(self):
-        return int(self.score + 2)
-
-    def get_ticks(self):
-        return [tick for tick in range(self._get_max_score())]
-
     @property
     def duration(self):
         return self.daily_set.count()
@@ -100,8 +94,12 @@ class Sprint(models.Model):
         return sum(self.issue_set.filter(unplanned=True, state='closed').values_list('score', flat=True))
 
     @property
-    def sprint_scored(self):
+    def scored(self):
         return sum(self.issue_set.filter(unplanned=False, state='closed').values_list('score', flat=True))
+
+    @property
+    def issues_count(self):
+        return self.issue_set.count()
 
     def get_data_burndown(self):
         # FIXME refactor this method
