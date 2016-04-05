@@ -20,6 +20,7 @@
               fillColor : "rgba(151,187,205,0.2)",
               strokeColor : "rgba(151,187,205,1)",
               pointColor : "rgba(151,187,205,1)",
+              pointStrokeColor : "#fff",
               pointHighlightFill : "#fff",
               pointHighlightStroke : "rgba(151,187,205,1)",
               data : [{% for point in burndown_data.score %}"{{ point }}",{% endfor %}],
@@ -50,49 +51,44 @@ window.onload = function(){
 
   <div class="bs-component">
     <div class="jumbotron">
-        <div>
-            <canvas id="canvas" height="450" width="600"></canvas>
-        </div>
+      <div>
+          <canvas id="canvas" height="450" width="600"></canvas>
+      </div>
     </div>
-
     <div class="row">
+     <div class="container text-center col-xs-3">
+       <div class="well well-lg">
+         <span style="font-weight: bold;">{{ sprint.score|floatformat }}</span>
+         <br />
+         <span>Total Story</span>
+       </div>
+     </div>
 
-      <div class="container text-center col-md-3">
-        <div class="well well-lg">
-          <span style="font-weight: bold;">{{sprint.score}}</span>
-          <br />
-          <span>Total Story</span>
-        </div>
-      </div>
+     <div class="container text-center col-xs-3">
+       <div class="well well-lg">
+         <span style="font-weight: bold;">{{ sprint.scored|floatformat }}</span>
+         <br />
+         <span>Completed Story Points</span>
+       </div>
+     </div>
 
-      <div class="container text-center col-md-3">
-        <div class="well well-lg">
-          <span style="font-weight: bold;">{{sprint.scored}}</span>
-          <br />
-          <span>Completed Story Points</span>
-        </div>
-      </div>
+     <div class="container text-center col-xs-3">
+       <div class="well well-lg">
+         <span style="font-weight: bold;">{{ sprint.issues_count }}</span>
+         <br/>
+         <span>Total Issues</span>
+       </div>
+     </div>
 
-      <div class="container text-center col-md-3">
-        <div class="well well-lg">
-          <span style="font-weight: bold;">{{sprint.issues_count}}</span>
-          <br/>
-          <span>Total Issues</span>
-        </div>
-      </div>
-
-      <div class="container text-center col-md-3">
-        <div class="well well-lg">
-          <span style="font-weight: bold;">{{sprint.score_unplanned}}</span>
-          <br />
-          <span>Unplanned Story Points</span>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
+     <div class="container text-center col-xs-3">
+       <div class="well well-lg">
+         <span style="font-weight: bold;">{{ sprint.score_unplanned|floatformat }}</span>
+         <br />
+         <span>Unplanned Story Points</span>
+       </div>
+     </div>
+   </div>
+ </div>
   <div class="panel panel-primary">
     <div class="panel-heading">
       <h3 class="panel-title" style="text-align: center;">Issues</h3>
@@ -113,21 +109,21 @@ window.onload = function(){
           {% for issue in issues %}
               <tr>
 
-                <td class="col-md-1">
+                <td class="col-xs-1">
                   <a href="{{issue.url}}" target="_blank">
                     {{ issue.number }}
                   </a>
                 </td>
 
-                <td class="col-md-5">{{ issue.title }}</td>
-                <td class="col-md-1">{{ issue.score }}</td>
-                <td class="col-md-2">{{ issue.assignee_login }}</td>
+                <td class="col-xs-5">{{ issue.title }}</td>
+                <td class="col-xs-1">{{ issue.score|floatformat }}</td>
+                <td class="col-xs-2">{{ issue.assignee_login }}</td>
 
-                <td class="col-md-1">
+                <td class="col-xs-1">
                     <span class=" {% if issue.state == 'open' %} octicon octicon-issue-opened open {% else %} octicon octicon-issue-closed closed {% endif %}"></span>
                 </td>
 
-                <td class="col-md-2"> {% if issue.closed_at %} {{ issue.closed_at }} {% endif %}</td>
+                <td class="col-xs-2"> {% if issue.closed_at %} {{ issue.closed_at }} {% endif %}</td>
               </tr>
 
           {% endfor %}
@@ -156,21 +152,21 @@ window.onload = function(){
           {% for issue in issues_unplanned %}
             <tr>
 
-              <td class="col-md-1">
+              <td class="col-xs-1">
                 <a href="{{issue.url}}" target="_blank">
                   {{ issue.number }}
                 </a>
               </td>
 
-              <td class="col-md-5">{{ issue.title }}</td>
-              <td class="col-md-1">{{ issue.score }}</td>
-              <td class="col-md-2">{{ issue.assignee_login }}</td>
+              <td class="col-xs-5">{{ issue.title }}</td>
+              <td class="col-xs-1">{{ issue.score|floatformat }}</td>
+              <td class="col-xs-2">{{ issue.assignee_login }}</td>
 
-              <td class="col-md-1">
+              <td class="col-xs-1">
                 <span class=" {% if issue.state == 'open' %} octicon octicon-issue-opened open {% else %} octicon octicon-issue-closed closed {% endif %}"></span>
               </td>
 
-              <td class="col-md-2"> {% if issue.closed_at %} {{ issue.closed_at }} {% endif %}</td>
+              <td class="col-xs-2"> {% if issue.closed_at %} {{ issue.closed_at }} {% endif %}</td>
 
             </tr>
           {% endfor %}
