@@ -11,8 +11,8 @@
       <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 
       <!-- Bootstrap Material Design -->
-      <link rel="stylesheet" type="text/css" href="{%static 'bower_components/bootstrap-material-design/dist/bootstrap-material-design.css' %}">
-      <link rel="stylesheet" type="text/css" href="{%static 'bower_components/bootstrap-material-design/scss/_ripples.scss' %}">
+      <link rel="stylesheet" type="text/css" href="{%static 'bmd/css/bootstrap-material-design.css' %}">
+      <link rel="stylesheet" type="text/css" href="{%static 'bmd/css/ripples.css' %}">
 
       <link rel="shortcut icon" type="image/png" href="https://cloud.githubusercontent.com/assets/6231505/10681166/4b4d4cce-7905-11e5-9d21-0469ebd11c13.png"/>
     {% endblock %}
@@ -29,8 +29,9 @@
   </head>
 
   <body>
+    {% include "topbar.html" %}
+
     <div class="container">
-      {% include "topbar.html" %}
 
       {% block content %}
 
