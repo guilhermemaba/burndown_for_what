@@ -30,7 +30,6 @@
           title: 'Team: {{ team }}',
           subtitle: 'Name: {{ name }}'
 				},
-				width: 1300,
 				height: 700,
 				vAxis: {
 					title: 'Score',
@@ -59,53 +58,72 @@
 
 {% block content %}
 
-  <div id="title" style="width:250px; margin:0 auto;">
-      Burndown for what
-      <img alt="Burndown for what" src="https://cloud.githubusercontent.com/assets/6231505/10681166/4b4d4cce-7905-11e5-9d21-0469ebd11c13.png">
+
+  <div class="bs-component">
+    <div class="jumbotron"></div>
   </div>
-  <div id="line_bottom_x"></div>
 
-  <h3>Issues</h3>
-  <table style='text-align: left'>
-    <tr>
-      <th>Issue</th>
-      <th>Title</th>
-      <th>Score</th>
-      <th>Assignee</th>
-      <th>State</th>
-      <th>Close At</th>
-    </tr>
-    {% for issue in issues %}
-      <tr>
-        <th>{{ issue.number }}</th>
-        <th>{{ issue.title }}</th>
-        <th>{{ issue.score }}</th>
-        <th>{{ issue.assignee_login }}</th>
-        <th>{{ issue.state }}</th>
-        <th>{{ issue.closed_at }}</th>
-      </tr>
-    {% endfor %}
-  </table>
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">Issues</h3>
+    </div>
+    <div class="panel-body">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Issue</th>
+            <th>Title</th>
+            <th>Score</th>
+            <th>Assignee</th>
+            <th>State</th>
+            <th>Close At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues %}
+            <tr>
+              <th>{{ issue.number }}</th>
+              <th>{{ issue.title }}</th>
+              <th>{{ issue.score }}</th>
+              <th>{{ issue.assignee_login }}</th>
+              <th>{{ issue.state }}</th>
+              <th>{{ issue.closed_at }}</th>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-  <h3>Issues Unplanned</h3>
-  <table style='text-align: left'>
-    <tr>
-      <th>Issue</th>
-      <th>Title</th>
-      <th>Score</th>
-      <th>Assignee</th>
-      <th>State</th>
-      <th>Close At</th>
-    </tr>
-    {% for issue in issues_unplanned %}
-      <tr>
-        <th>{{ issue.number }}</th>
-        <th>{{ issue.title }}</th>
-        <th>{{ issue.score }}</th>
-        <th>{{ issue.assignee_login }}</th>
-        <th>{{ issue.state }}</th>
-        <th>{{ issue.closed_at }}</th>
-      </tr>
-    {% endfor %}
-  </table>
+  <div class="panel panel-warning">
+    <div class="panel-heading">
+      <h3 class="panel-title">Issues Unplanned</h3>
+    </div>
+    <div class="panel-body">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Issue</th>
+            <th>Title</th>
+            <th>Score</th>
+            <th>Assignee</th>
+            <th>State</th>
+            <th>Close At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for issue in issues_unplanned %}
+            <tr>
+              <th>{{ issue.number }}</th>
+              <th>{{ issue.title }}</th>
+              <th>{{ issue.score }}</th>
+              <th>{{ issue.assignee_login }}</th>
+              <th>{{ issue.state }}</th>
+              <th>{{ issue.closed_at }}</th>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </div>
+    </table>
+  </div>
 {% endblock %}
