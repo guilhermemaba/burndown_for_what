@@ -27,7 +27,6 @@ class Sprint(models.Model):
     team = models.ForeignKey('burndown_for_what.Team')
     resume = models.TextField(null=True, blank=True, help_text=u'Markdown is possible.')
     date_begin = models.DateField()
-    score = models.FloatField()
     github_user = models.CharField(max_length=150, blank=True, null=True)
     github_repo = models.CharField(max_length=150, blank=True, null=True)
     github_milestone_id = models.IntegerField(default=0)
@@ -45,7 +44,6 @@ class Sprint(models.Model):
         super(Sprint, self).save(*args, **kwargs)
         for issue in connection.issues.list_by_repo(state='all', **{'milestone': self.github_milestone_id}).all():
             self._create_issue(issue)
-        self.score = self._calculate_score()
         self._update_daily()
 
     def _update_daily(self):
@@ -96,6 +94,10 @@ class Sprint(models.Model):
     @property
     def scored(self):
         return sum(self.issue_set.filter(unplanned=False, state='closed').values_list('score', flat=True))
+
+    @property
+    def score(self):
+        return sum(self.issue_set.filter(unplanned=False).values_list('score', flat=True))
 
     @property
     def issues_count(self):
