@@ -105,25 +105,24 @@ class Sprint(models.Model):
 
     def get_data_burndown(self):
         # FIXME refactor this method
-        score_per_day = self.score/self.duration
         score_daily = 0
         score_unplanned = 0
-        result = [(str(self.date_begin), self.score, self.score, 0), ]
-
+        score_per_day = self.score/self.duration
+        result = {
+            'days': [self.date_begin,],
+            'burndown_line': [self.score,],
+            'score': [self.score,],
+            'unplanned': [0,],
+        }
         for x, daily in enumerate(self.daily_set.all(), start=1):
-            burndown_daily_score = self.score - (x * score_per_day)
-            score_daily += daily.score if daily.score else 0
+            result['days'].append(str(daily.date))
+            result['burndown_line'].append(self.score - (x * score_per_day))
             score_unplanned += daily.score_unplanned if daily.score_unplanned else 0
+            score_daily += daily.score if daily.score else 0
             if daily.closed:
-                score_team = (self.score-score_daily)
-                result.append(
-                    (str(daily.date), score_team, burndown_daily_score, score_unplanned)
-                )
-            else:
-                result.append(
-                    (str(daily.date), None, burndown_daily_score, None)
-                )
-
+                score = (self.score-score_daily)
+                result['score'].append(score)
+                result['unplanned'].append(score_unplanned)
         return result
 
 
