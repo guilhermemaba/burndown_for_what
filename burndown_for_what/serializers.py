@@ -50,7 +50,7 @@ class IssueModelSerializer(serializers.ModelSerializer):
 class SprintSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sprint
-        fields = ('id', 'name', 'team', 'date_begin', 'score', 'closed', 'sprint_scored')
+        fields = ('id', 'name', 'team', 'date_begin', 'score', 'closed', 'scored')
 
 
 class SprintCustomSerializer(serializers.ModelSerializer):
