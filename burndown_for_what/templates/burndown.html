@@ -20,7 +20,6 @@
               fillColor : "rgba(151,187,205,0.2)",
               strokeColor : "rgba(151,187,205,1)",
               pointColor : "rgba(151,187,205,1)",
-              pointStrokeColor : "#fff",
               pointHighlightFill : "#fff",
               pointHighlightStroke : "rgba(151,187,205,1)",
               data : [{% for point in burndown_data.score %}"{{ point }}",{% endfor %}],
@@ -55,6 +54,43 @@ window.onload = function(){
             <canvas id="canvas" height="450" width="600"></canvas>
         </div>
     </div>
+
+    <div class="row">
+
+      <div class="container text-center col-md-3">
+        <div class="well well-lg">
+          <span style="font-weight: bold;">{{sprint.score}}</span>
+          <br />
+          <span>Total Story</span>
+        </div>
+      </div>
+
+      <div class="container text-center col-md-3">
+        <div class="well well-lg">
+          <span style="font-weight: bold;">{{sprint.scored}}</span>
+          <br />
+          <span>Completed Story Points</span>
+        </div>
+      </div>
+
+      <div class="container text-center col-md-3">
+        <div class="well well-lg">
+          <span style="font-weight: bold;">{{sprint.issues_count}}</span>
+          <br/>
+          <span>Total Issues</span>
+        </div>
+      </div>
+
+      <div class="container text-center col-md-3">
+        <div class="well well-lg">
+          <span style="font-weight: bold;">{{sprint.score_unplanned}}</span>
+          <br />
+          <span>Unplanned Story Points</span>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
   <div class="panel panel-primary">
