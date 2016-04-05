@@ -2,57 +2,46 @@
 
 {% block extra_js %}
   <script type="text/javascript">
-    google.load('visualization', '1.1', {packages: ['corechart', 'line']});
-    google.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Day');
-      data.addColumn('number', 'Score');
-      data.addColumn('number', 'Burndown line');
-      data.addColumn('number', 'Score Unplanned');
-
-      data.addRows([
-        {% for daily_date, score, burn_score, unplanned in burndown_data %}
-          ['{{ daily_date }}',
-            {% if score %}{{ score }}{% else%} null {% endif %},
-            {{ burn_score }},
-            {% if unplanned != None %}{{ unplanned }}{% else%} null {% endif %}
-          ],
-        {% endfor %}
-      ]);
-
-      var options = {
-        title: 'Team: {{ team }}',
-        subtitle: 'Name: {{ name }}',
-        chart: {
-          title: 'Team: {{ team }}',
-          subtitle: 'Name: {{ name }}'
-				},
-				height: 700,
-				vAxis: {
-					title: 'Score',
-					ticks: {{ yticks }},
-					textStyle: {
-						fontSize: 12
-					}
-        },
-				hAxis: {
-					textStyle: {
-						fontSize: 11
-					}
-        },
-				series: {
-					1: {lineDashStyle: [2,2]}
-				}
-
-      };
-
-      var chart = new google.visualization.LineChart(document.getElementById('line_bottom_x'));
-
-      chart.draw(data, options);
-    }
+  var lineChartData = {
+      labels : [{% for label in burndown_data.days %}"{{ label }}",{% endfor %}],
+      datasets : [
+          {
+              label: "Burndown Line",
+              fillColor : "rgba(255,255,255,0.2)",
+              strokeColor : "rgba(165,42,42,1)",
+              pointColor : "rgba(165,42,42,1)",
+              pointStrokeColor : "#fff",
+              pointHighlightFill : "#fff",
+              pointHighlightStroke : "rgba(220,220,220,1)",
+              data : [{% for point in burndown_data.burndown_line %}"{{ point }}",{% endfor %}],
+          },
+          {
+              label: "Score",
+              fillColor : "rgba(151,187,205,0.2)",
+              strokeColor : "rgba(151,187,205,1)",
+              pointColor : "rgba(151,187,205,1)",
+              pointHighlightFill : "#fff",
+              pointHighlightStroke : "rgba(151,187,205,1)",
+              data : [{% for point in burndown_data.score %}"{{ point }}",{% endfor %}],
+          },
+          {
+              label: "Unplanned",
+              fillColor : "rgba(255,127,0,0.2)",
+              strokeColor : "rgba(255,127,0,1)",
+              pointColor : "rgba(255,127,0,1)",
+              pointStrokeColor : "#fff",
+              pointHighlightFill : "#fff",
+              pointHighlightStroke : "rgba(255,127,0,1)",
+              data : [{% for point in burndown_data.unplanned %}"{{ point }}",{% endfor %}],
+          }
+      ]
+  }
+window.onload = function(){
+  var ctx = document.getElementById("canvas").getContext("2d");
+  window.myLine = new Chart(ctx).Line(lineChartData, {
+    responsive: true
+  });
+}
   </script>
 {% endblock %}
 
@@ -60,8 +49,11 @@
 
 
   <div class="bs-component">
-
-    <div class="jumbotron"></div>
+    <div class="jumbotron">
+        <div>
+            <canvas id="canvas" height="450" width="600"></canvas>
+        </div>
+    </div>
 
     <div class="row">
 
@@ -98,6 +90,7 @@
       </div>
 
     </div>
+
   </div>
 
   <div class="panel panel-primary">
@@ -145,7 +138,7 @@
 
   <div class="panel panel-warning">
     <div class="panel-heading">
-      <h3 class="panel-title" style="text-align: center;">Issues Unplanned</h3>
+      <h3 class="panel-title">Issues Unplanned</h3>
     </div>
     <div class="panel-body">
       <table class="table table-hover">
