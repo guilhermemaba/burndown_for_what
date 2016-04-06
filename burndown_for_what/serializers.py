@@ -66,7 +66,7 @@ class SprintCustomSerializer(serializers.ModelSerializer):
         )
 
     def get_burndown_data(self, sprint):
-        return sprint.get_data_burndown()
+        return sprint.chart_data()
 
     def get_issues(self, sprint):
         serializer = IssueModelSerializer(instance=sprint.issue_set.all(),  many=True)

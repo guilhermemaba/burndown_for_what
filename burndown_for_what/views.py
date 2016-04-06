@@ -23,12 +23,12 @@ class BurndownTemplateView(TemplateView):
     template_name = 'burndown.html'
 
     def get_context_data(self, **kwargs):
-        sprint = Sprint.objects.get(pk=kwargs.get('sprint_id'))
         context = super(BurndownTemplateView, self).get_context_data(**kwargs)
+        sprint = Sprint.objects.get(pk=kwargs.get('sprint_id'))
         context['issues'] = sprint.issue_set.filter(unplanned=False).order_by('-state', 'assignee_login')
         context['issues_unplanned'] = sprint.issue_set.filter(unplanned=True).order_by('-state', 'assignee_login')
         context['sprint'] = sprint
-        context['burndown_data'] = sprint.get_data_burndown()
+        context['burndown_data'] = sprint.chart_data()
         return context
 
 

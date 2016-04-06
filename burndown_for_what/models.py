@@ -32,19 +32,8 @@ class Sprint(models.Model):
     github_milestone_id = models.IntegerField(default=0)
     closed = models.BooleanField()
 
-    def save(self, *args, **kwargs):
-        """
-        Save object and search/create issues refers the milestone, after this, update *dailys*
-
-        :return:
-        """
-        connection = connect_github(self.github_user, self.github_repo)
-        # For default, delete all issues, and after
-        Issue.objects.filter(sprint=self).delete()
-        super(Sprint, self).save(*args, **kwargs)
-        for issue in connection.issues.list_by_repo(state='all', **{'milestone': self.github_milestone_id}).all():
-            self._create_issue(issue)
-        self._update_daily()
+    def __str__(self):
+        return u'{}'.format(self.name)
 
     def _update_daily(self):
         issues_closed = self.issue_set.filter(state='closed')
@@ -54,9 +43,6 @@ class Sprint(models.Model):
                 daily.score = sum(issues_daily.filter(unplanned=False).values_list('score', flat=True))
                 daily.score_unplanned = sum(issues_daily.filter(unplanned=True).values_list('score', flat=True))
                 daily.save()
-
-    def _calculate_score(self):
-        return sum(self.issue_set.filter(unplanned=False).values_list('score', flat=True))
 
     def _create_issue(self, issue):
         """
@@ -80,8 +66,18 @@ class Sprint(models.Model):
             unplanned=unplanned
         )
 
-    def __str__(self):
-        return u'{}'.format(self.name)
+    def save(self, *args, **kwargs):
+        """
+        Save object and search/create issues refers the milestone, after this, update *dailys*
+
+        :return:
+        """
+        connection = connect_github(self.github_user, self.github_repo)
+        Issue.objects.filter(sprint=self).delete()
+        super(Sprint, self).save(*args, **kwargs)
+        for issue in connection.issues.list_by_repo(state='all', **{'milestone': self.github_milestone_id}).all():
+            self._create_issue(issue)
+        self._update_daily()
 
     @property
     def duration(self):
@@ -103,25 +99,39 @@ class Sprint(models.Model):
     def issues_count(self):
         return self.issue_set.count()
 
-    def get_data_burndown(self):
-        # FIXME refactor this method
+    @property
+    def avg_score(self):
+        return self.score / self.duration
+
+    @staticmethod
+    def burndown_point(score, index, avg_score):
+        return score - (index * avg_score)
+
+    def chart_data(self):
+        """
+        Returns need data for ploting chart.
+
+        :return dict:
+        """
+        # create local variables for avoid hints on Database.
+        score = self.score
         score_daily = 0
         score_unplanned = 0
-        score_per_day = self.score/self.duration
+        score_per_day = self.avg_score
+
         result = {
             'days': [self.date_begin,],
-            'burndown_line': [self.score,],
-            'score': [self.score,],
+            'burndown_line': [score,],
+            'score': [score,],
             'unplanned': [0,],
         }
         for x, daily in enumerate(self.daily_set.all(), start=1):
             result['days'].append(str(daily.date))
-            result['burndown_line'].append(self.score - (x * score_per_day))
-            score_unplanned += daily.score_unplanned if daily.score_unplanned else 0
-            score_daily += daily.score if daily.score else 0
+            result['burndown_line'].append(Sprint.burndown_point(score, x, score_per_day))
             if daily.closed:
-                score = (self.score-score_daily)
-                result['score'].append(score)
+                score_unplanned += daily.score_unplanned if daily.score_unplanned else 0
+                score_daily += daily.score if daily.score else 0
+                result['score'].append(score - score_daily)
                 result['unplanned'].append(score_unplanned)
         return result
 

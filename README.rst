@@ -68,8 +68,7 @@ That's it, run the project server::
 
 You can access http://127.0.0.1:8000/burndown/sprint/1/
 
-.. image:: https://cloud.githubusercontent.com/assets/6231505/10746691/aba0e00e-7c34-11e5-9c1f-88263b9f3dd8.png
-
+.. image:: https://cloud.githubusercontent.com/assets/6231505/14302015/cb503f40-fb72-11e5-9019-e1afc1e798da.png
 
 Features
 --------
