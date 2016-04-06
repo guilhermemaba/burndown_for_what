@@ -51,9 +51,9 @@ And then yours **urls.py**::
         url(r'^burndown/', include('burndown_for_what.urls')),
     ]
 
-If you prefer, you can import the sample fixtures::
+You need to creating a sprint and their *dailys*, when saving the sprint, will be sought all github data.
 
-    /manage.py loaddata initial_data --app=burndown_for_what
+.. image:: https://cloud.githubusercontent.com/assets/6231505/14302236/211a8ef6-fb75-11e5-9299-016c362aff57.png
 
 That's it, run the project server::
 
