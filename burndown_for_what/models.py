@@ -53,6 +53,7 @@ class Sprint(models.Model):
         """
         unplanned = any([label for label in issue.labels if label.name == 'unplanned'])
         score = sum([float(label.name) for label in issue.labels if label.name in SPRINT_POINT])
+        assignee = issue.assignee.login if issue.assignee else None
         Issue.objects.create(
             sprint=self,
             title=issue.title,
@@ -60,7 +61,7 @@ class Sprint(models.Model):
             url=issue.html_url,
             number=issue.number,
             state=issue.state,
-            assignee_login=issue.assignee.login,
+            assignee_login=assignee,
             closed_at=issue.closed_at,
             score=score,
             unplanned=unplanned

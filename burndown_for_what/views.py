@@ -11,9 +11,9 @@ from django.views.generic import TemplateView
 from burndown_for_what.models import Sprint
 from burndown_for_what.utils import connect_github
 from burndown_for_what.serializers import (
-    MilestoneGithubSerializer,
-    IssueModelSerializer,
     IssueGithubSerializer,
+    IssueModelSerializer,
+    MilestoneGithubSerializer,
     SprintCustomSerializer,
     SprintSerializer,
 )
