@@ -93,6 +93,10 @@ class Sprint(models.Model):
         return sum(self.issue_set.filter(unplanned=False, state='closed').values_list('score', flat=True))
 
     @property
+    def percentage_reached(self):
+        return (self.scored * 100) / self.score
+
+    @property
     def score(self):
         return sum(self.issue_set.filter(unplanned=False).values_list('score', flat=True))
 

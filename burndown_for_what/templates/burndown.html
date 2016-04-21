@@ -119,7 +119,7 @@ window.onload = function(){
 
      <div class="container text-center col-xs-3">
        <div class="well well-lg">
-         <span style="font-weight: bold;">{{ sprint.scored|floatformat }}</span>
+         <span style="font-weight: bold;">{{ sprint.scored|floatformat }} ({{ sprint.percentage_reached|floatformat  }}%)</span>
          <br />
          <span>Completed Story Points</span>
        </div>
