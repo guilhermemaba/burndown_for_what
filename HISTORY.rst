@@ -27,3 +27,8 @@ History
 * The look of burndown was improved.
 * Corrected some bugs.
 * Bumpversion configured correctly
+
+0.1.4 (YYYY-mm-dd)
+++++++++++++++++++
+
+* Added default value in assignee.

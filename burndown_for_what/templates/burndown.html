@@ -213,7 +213,7 @@ window.onload = function(){
 
               <td class="col-xs-5">{{ issue.title }}</td>
               <td class="col-xs-1">{{ issue.score|floatformat }}</td>
-              <td class="col-xs-2">{{ issue.assignee_login }}</td>
+              <td class="col-xs-2">{{ issue.assignee_login|default_if_none:"no user" }}</td>
 
               <td class="col-xs-1">
                 <span class=" {% if issue.state == 'open' %} octicon octicon-issue-opened open {% else %} octicon octicon-issue-closed closed {% endif %}"></span>
