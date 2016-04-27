@@ -10,6 +10,14 @@ Burndown for what
 
 Simple django application for generate burndown graphics.
 
+Features
+--------
+
+* Management issues planned and unplanned.
+* Management score planned and unplanned.
+* Github integration.
+* Generates burndown chart.
+
 Documentation
 -------------
 
@@ -70,14 +78,12 @@ You can access http://127.0.0.1:8000/burndown/sprint/1/
 
 .. image:: https://cloud.githubusercontent.com/assets/6231505/14302015/cb503f40-fb72-11e5-9019-e1afc1e798da.png
 
-Features
---------
-
-* TODO
-
 Cookiecutter Tools Used in Making This Package
 ----------------------------------------------
 
 *  cookiecutter
 *  cookiecutter-djangopackage
+*  django
 *  django-rest-framework
+*  pygithub3
+*  requests
