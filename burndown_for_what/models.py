@@ -54,7 +54,7 @@ class Sprint(models.Model):
         unplanned = any([label for label in issue.labels if label.name == 'unplanned'])
         score = sum([float(label.name) for label in issue.labels if label.name in SPRINT_POINT])
         assignee = issue.assignee.login if issue.assignee else None
-        Issue.objects.create(
+        return Issue.objects.create(
             sprint=self,
             title=issue.title,
             github_id=issue.id,
@@ -77,7 +77,9 @@ class Sprint(models.Model):
         Issue.objects.filter(sprint=self).delete()
         super(Sprint, self).save(*args, **kwargs)
         for issue in connection.issues.list_by_repo(state='all', **{'milestone': self.github_milestone_id}).all():
-            self._create_issue(issue)
+            issue_created = self._create_issue(issue)
+            for assignee in issue.assignees:
+                Assignee.objects.create(issue=issue_created, login=assignee['login'])
         self._update_daily()
 
     @property
@@ -152,6 +154,11 @@ class Issue(models.Model):
     closed_at = models.DateField(null=True, blank=True)
     score = models.FloatField(null=True, blank=True)
     unplanned = models.NullBooleanField()
+
+
+class Assignee(models.Model):
+    issue = models.ForeignKey('burndown_for_what.Issue')
+    login = models.CharField(max_length=150)
 
 
 class Daily(models.Model):
